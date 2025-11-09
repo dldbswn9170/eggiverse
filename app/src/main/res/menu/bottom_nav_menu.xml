@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@android:drawable/ic_menu_mapmode"
+        android:title="홈" />
+    <item
+        android:id="@+id/navigation_minigame"
+        android:icon="@android:drawable/ic_menu_slideshow"
+        android:title="미니게임" />
+    <item
+        android:id="@+id/navigation_myroom"
+        android:icon="@android:drawable/ic_menu_slideshow"
+        android:title="마이룸" />
+    <item
+        android:id="@+id/navigation_store"
+        android:icon="@android:drawable/ic_menu_slideshow"
+        android:title="스토어" />
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@android:drawable/ic_menu_manage"
+        android:title="설정" />
+</menu>
