@@ -36,7 +36,13 @@ class _HomeScreenState extends State<HomeScreen> {
   int level = 1;
   int hunger = 30;
   int money = 1250;
-  bool showChatModal = false;
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   void _sendMessage() {
     if (_textController.text.trim().isEmpty) return;
@@ -50,15 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     _textController.clear();
-
-    // 스크롤을 맨 아래로
-    Future.delayed(const Duration(milliseconds: 100), () {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    });
+    _scrollToBottom();
 
     // AI 응답
     Timer(const Duration(seconds: 1), () {
@@ -73,13 +71,19 @@ class _HomeScreenState extends State<HomeScreen> {
         ));
       });
 
-      Future.delayed(const Duration(milliseconds: 100), () {
+      _scrollToBottom();
+    });
+  }
+
+  void _scrollToBottom() {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
-      });
+      }
     });
   }
 
@@ -96,17 +100,12 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // 상단 스탯
               _buildTopStats(),
-
-              // 알 섹션
               Expanded(
                 child: Center(
                   child: _buildEggSection(),
                 ),
               ),
-
-              // 배고픔 바
               _buildHungerSection(),
             ],
           ),
@@ -124,7 +123,12 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(width: 8),
           Expanded(child: _buildStatBox('레벨', '$level')),
           const SizedBox(width: 8),
-          Expanded(child: _buildStatBox('소지금', '${money.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원')),
+          Expanded(
+            child: _buildStatBox(
+              '소지금',
+              '${money.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원',
+            ),
+          ),
         ],
       ),
     );
@@ -171,22 +175,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // === 🥚 알 이미지 변경 적용 ===
   Widget _buildEggSection() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
-          '🥚',
-          style: TextStyle(fontSize: 120),
+        Image.asset(
+          'assets/images/pixel_egg.png', // 이미지 경로
+          width: 150, // 이미지 크기 조절
+          fit: BoxFit.contain,
         ),
         const SizedBox(height: 20),
         GestureDetector(
-          onTap: () {
-            setState(() {
-              showChatModal = true;
-            });
-            _showChatDialog();
-          },
+          onTap: _showChatDialog, // 불필요한 setState 제거
           child: Stack(
             clipBehavior: Clip.none,
             children: [
@@ -298,7 +299,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: Column(
             children: [
-              // 헤더
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -326,8 +326,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-
-              // 메시지 리스트
               Expanded(
                 child: ListView.builder(
                   controller: _scrollController,
@@ -339,8 +337,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
-
-              // 입력창
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -397,41 +393,67 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // === 💬 픽셀 말풍선 적용 ===
   Widget _buildMessageBubble(Message message) {
     final isUser = message.type == MessageType.user;
-    return Align(
-      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 6),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.75,
-        ),
-        decoration: BoxDecoration(
-          color: isUser ? AppColors.pink : AppColors.cyan,
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Text(
-          message.text,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 13,
-            height: 1.4,
+
+    if (isUser) {
+      // 사용자 메시지 버블
+      return Align(
+        alignment: Alignment.centerRight,
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.75,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.pink,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Text(
+            message.text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 13,
+              height: 1.4,
+            ),
           ),
         ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _textController.dispose();
-    _scrollController.dispose();
-    super.dispose();
+      );
+    } else {
+      // AI 메시지 (픽셀 말풍선)
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.only(left: 18, right: 18, top: 10, bottom: 18),
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.75,
+          ),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: const AssetImage('assets/images/speech_bubble.png'),
+              // centerSlice는 이미지를 9조각으로 나누어 코너는 유지하고 중앙 부분만 늘려줍니다.
+              centerSlice: Rect.fromLTWH(10, 10, 100, 10), // 이미지에 맞게 조절
+              fit: BoxFit.fill,
+            ),
+          ),
+          child: Text(
+            message.text,
+            style: const TextStyle(
+              color: Colors.black, // 텍스트 색상을 검은색으로 변경
+              fontSize: 14,
+              height: 1.4,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      );
+    }
   }
 }
 
-// 메시지 모델
 enum MessageType { user, ai }
 
 class Message {
@@ -446,7 +468,6 @@ class Message {
   });
 }
 
-// 색상 정의
 class AppColors {
   static const darkBg = Color(0xFF1A0F2E);
   static const purple = Color(0xFF2D1B4E);
@@ -456,7 +477,6 @@ class AppColors {
   static const yellow = Color(0xFFFFD700);
 }
 
-// 말풍선 꼬리 그리기
 class BubbleTailPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -476,3 +496,4 @@ class BubbleTailPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+

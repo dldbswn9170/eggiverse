@@ -21,7 +21,7 @@ flutter:
 
   # 이미지 asset 추가
   assets:
-    - assets/images/game-background.png
+    - assets/images/
 
   # 폰트 설정 (선택사항)
   # fonts:
