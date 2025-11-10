@@ -1,32 +1,5 @@
-name: eggiverse
-description: 알 키우기 게임 앱
-publish_to: 'none'
-version: 1.0.0+1
-
-environment:
-  sdk: '>=3.0.0 <4.0.0'
-
-dependencies:
-  flutter:
-    sdk: flutter
-  cupertino_icons: ^1.0.2
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^3.0.0
-
 flutter:
   uses-material-design: true
-
-  # 이미지 asset 추가
+  
   assets:
-    - assets/images/
-
-  # 폰트 설정 (선택사항)
-  # fonts:
-  #   - family: Pretendard
-  #     fonts:
-  #       - asset: assets/fonts/Pretendard-Regular.ttf
-  #       - asset: assets/fonts/Pretendard-Bold.ttf
-  #         weight: 700
+    - assets/backgrounds/
