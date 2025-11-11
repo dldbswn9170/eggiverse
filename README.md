@@ -1,16 +1,96 @@
-# eggiverse
+# EGGIVERSE
 
-A new Flutter project.
+> **우주에서 발견된 신비로운 알을 키워서 다양한 생명체로 부화시키는 힐링 육성 게임**  
+> LLM 기반 대화형 성장 시뮬레이션 | Android App 프로젝트
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 👾 프로젝트 소개
 
-A few resources to get you started if this is your first Flutter project:
+**eggiverse**는 우주에서 발견한 신비로운 알을 키우며 다양한 생명체로 진화시키는 모바일 힐링 육성 게임입니다.  
+AI 대화 시스템을 통해 알과 실시간으로 소통하며 감정적 교류를 형성하고, 랜덤 이벤트 및 미니게임을 통해 매번 새로운 플레이 경험을 제공합니다.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+**키워드**  
+`#우주` `#성장` `#랜덤` `#수집` `#소통` `#치유`
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## 🎮 주요 특징
+
+- **랜덤 이벤트 & 성장 분기**  
+  → 유성우, 블랙홀, 외계인 방문 등 다양한 우주 이벤트 발생  
+  → 선택에 따라 성장 트리와 진화 형태가 달라짐  
+
+- **AI 기반 상호작용 (LLM, GPT API)**  
+  → 알과 대화하며 감정 교류  
+  → 예시  
+    - “오늘 왜 기운 없어 보여?” → “밥을 못 먹어서 힘이 없어…”  
+    - “어제 뭐 봤어?” → 랜덤/상황 기반 응답
+
+- **마이 갤럭시 꾸미기**  
+  → 우주선 내부, 별자리, 행성 등을 자유롭게 장식  
+
+- **미니게임 시스템**  
+  - 소행성 피하기  
+  - 리듬 버튼  
+  - 외계 문자 퍼즐  
+  → 자원을 모아 아이템/먹이 구매 가능  
+
+- **심리적 치유 요소**  
+  → 부화/진화를 통한 성취감  
+  → 대화를 통한 위로와 정신적 안정  
+
+---
+
+## 👥 팀 구성 및 역할
+
+| 이름 | 역할 | 담당 업무 |
+|------|------|------------|
+| **최가현 (팀장)** | 핵심 시스템 개발 | 상점 페이지, 레벨링/이벤트 시스템 |
+| **최하원** | 미니게임 및 설정 | 미니게임 페이지, 메인 루프 연동 |
+| **이윤주** | UI/UX 및 DB 설계 | 메인 페이지, 알 상호작용, 화면 전환 |
+
+---
+
+## 🌠 프로젝트 목적
+
+기존 육성 게임의 단조로움을 벗어나,  
+**AI 대화를 통한 유대감과 힐링 경험**을 제공하는 것이 목표입니다.  
+사용자는 알과의 교감을 통해 **작은 위로와 동기부여**를 받을 수 있습니다.
+
+---
+
+> (추후 인게임 이미지 추가)
+
+---
+
+## 📂 저장소 구조 예시
+
+```bash
+eggiverse/
+├── app/
+│   ├── src/
+│   ├── assets/
+│   │   └── images/
+│   └── ...
+├── README.md
+├── pubspec.yaml
+└── ...
+````
+
+---
+
+## ⚙️ 설치 및 실행
+
+```bash
+# 프로젝트 클론
+git clone https://github.com/dldbswn9170/eggiverse.git
+cd eggiverse
+
+# Android Studio에서 실행
+```
+
+---
+
+> 2025학년도 3학년 2학기 안드로이드 프로젝트
+> © 2025 Team Eggmonina. All rights reserved.
