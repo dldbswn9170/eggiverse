@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/doodleBg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg_minigame1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <View
+        android:id="@+id/doodleOverlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#AA000000"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/doodle_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:title="Doodle Jump"
+        android:titleTextColor="@android:color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/doodleInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/doodle_toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/doodle_score_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="점수: 0"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:layout_marginEnd="16dp" />
+
+        <TextView
+            android:id="@+id/doodle_high_score_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="최고점수: 0"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <SurfaceView
+        android:id="@+id/doodle_game_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="20dp"
+        app:layout_constraintTop_toBottomOf="@id/doodleInfo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
