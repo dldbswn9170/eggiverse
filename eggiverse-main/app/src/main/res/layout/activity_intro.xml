@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/introRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF1A1A2E"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- 배경 별 효과 (선택사항) -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.3" />
+
+    <!-- 중앙 알 GIF -->
+    <ImageView
+        android:id="@+id/introEggImage"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/pixel_eggmove"
+        android:layout_marginBottom="80dp" />
+
+    <!-- 스토리 텍스트 -->
+    <TextView
+        android:id="@+id/storyText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/introEggImage"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:text="어느 날, 신비로운 우주선에서\n작은 알이 날아왔다..."
+        android:textColor="#FFC107"
+        android:fontFamily="@font/mainfont"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:lineSpacingExtra="8dp"
+        android:paddingHorizontal="40dp" />
+
+    <!-- 클릭 안내 -->
+    <TextView
+        android:id="@+id/clickToSkip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="40dp"
+        android:text="탭하여 계속"
+        android:textColor="#88FFFFFF"
+        android:fontFamily="@font/mainfont"
+        android:textSize="14sp"
+        android:visibility="visible" />
+
+</RelativeLayout>

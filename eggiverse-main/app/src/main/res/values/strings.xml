@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Eggiverse</string>
+    <string name="feed">먹이주기</string>
+    <string name="play">놀아주기</string>
+    <string name="shop">상점</string>
+    <string name="games">게임</string>
+    <string name="settings">설정</string>
+    <string name="my_room">마이룸</string>
+</resources>
+

@@ -1,0 +1,20 @@
+
+# Gradle
+.gradle/
+build/
+!build/kotlin/
+!build/tmp/
+
+# Android Studio
+.idea/
+*.iml
+*.hprof
+.cxx/
+local.properties
+
+# Mac
+.DS_Store
+
+# Captures
+captures/
+*.keystore

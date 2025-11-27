@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Eggiverse" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/space_primary</item>
+        <item name="android:windowBackground">@color/space_background</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/pixel_egg</item>
+        <item name="android:windowSplashScreenBackground">@color/space_background</item>
+    </style>
+</resources>
+
