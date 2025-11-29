@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#1A1A2E"
+    android:padding="24dp"
+    android:layout_margin="16dp">
+
+    <!-- 아이템 아이콘 -->
+    <ImageView
+        android:id="@+id/dialogItemIcon"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="centerInside"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- 아이템 이름 -->
+    <TextView
+        android:id="@+id/dialogItemTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- 아이템 설명 -->
+    <TextView
+        android:id="@+id/dialogItemDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textSize="14sp"
+        android:textColor="#B0B0B0"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- 구분선 -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#333344"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- 가격 표시 -->
+    <LinearLayout
+        android:id="@+id/priceLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:background="#2A2A40"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:layout_marginBottom="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="💰 "
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/dialogItemPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFC107"/>
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" 코인"
+            android:textSize="16sp"
+            android:textColor="#FFC107"/>
+    </LinearLayout>
+
+    <!-- 보유 상태 표시 -->
+    <TextView
+        android:id="@+id/ownedBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="✓ 보유중"
+        android:textSize="12sp"
+        android:textColor="#FFC107"
+        android:background="#33FFC107"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="4dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"/>
+
+    <!-- 버튼 영역 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <!-- 취소 버튼 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancel"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="닫기"
+            android:textColor="@android:color/white"
+            app:backgroundTint="#4A4A6A"
+            app:cornerRadius="12dp"
+            android:layout_marginEnd="8dp"
+            style="@style/Widget.MaterialComponents.Button"/>
+
+        <!-- 구매 버튼 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBuy"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="구매하기"
+            android:textColor="#0F0F1E"
+            app:backgroundTint="#FFC107"
+            app:cornerRadius="12dp"
+            android:layout_marginStart="8dp"
+            style="@style/Widget.MaterialComponents.Button"/>
+    </LinearLayout>
+
+</LinearLayout>
