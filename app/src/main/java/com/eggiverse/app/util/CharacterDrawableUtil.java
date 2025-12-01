@@ -18,7 +18,7 @@ public class CharacterDrawableUtil {
      */
     public static int getCharacterDrawableId(int level) {
         if (level >= 3) {
-            return R.drawable.level2;
+            return R.drawable.level2_1;
         } else if (level >= 2) {
             return R.drawable.level1;
         } else {

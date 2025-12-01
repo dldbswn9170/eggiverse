@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <!-- GIF 재생 (진화 연출) -->
+    <LinearLayout
+        android:id="@+id/gif_animation_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/evolution_gif_animation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
+            android:src="@drawable/levelup" />
+
+        <!-- GIF 하단 텍스트 박스 -->
+        <ImageView
+            android:layout_width="390dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="-200dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/textbox" />
+
+        <TextView
+            android:id="@+id/animation_text"
+            android:layout_width="300dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="-150dp"
+            android:gravity="center"
+            android:text="...오잉!? (캐릭터이름)의 상태가...!"
+            android:textAlignment="center"
+            android:textColor="#333333"
+            android:textSize="12sp"
+            android:textStyle="bold"
+
+            />
+
+    </LinearLayout>
+
+    <!-- 진화 결과 화면 (GIF 재생 후) -->
+    <LinearLayout
+        android:id="@+id/result_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="#000000"
+        android:visibility="gone">
+
+        <!-- 진화된 캐릭터 이미지 (떠 있는 연출) -->
+        <ImageView
+            android:id="@+id/evolved_character_image"
+            android:layout_width="300dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:src="@drawable/level2_1" />
+
+        <!-- 결과 텍스트 박스 -->
+        <ImageView
+            android:layout_width="390dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="-200dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/textbox" />
+
+        <!-- 축하 메시지 -->
+        <TextView
+            android:id="@+id/result_text"
+            android:layout_width="300dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="-150dp"
+            android:gravity="center"
+            android:text="축하합니다!\n(캐릭터이름)이 진화에 성공했습니다!"
+            android:textSize="12sp"
+            android:textColor="#333333"
+            android:textAlignment="center"
+            android:textStyle="bold" />
+
+        <!-- 확인 버튼 -->
+        <Button
+            android:id="@+id/confirm_evolution_button"
+            android:layout_width="150dp"
+            android:layout_height="45dp"
+            android:text="확인"
+            android:backgroundTint="#FF9800"
+            android:textColor="@android:color/white"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="30dp" />
+
+    </LinearLayout>
+
+</FrameLayout>
