@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/levelupbg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="40dp">
+
+        <!-- 제목 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="어떻게 진화할까?"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="40dp" />
+
+        <!-- 3가지 진화 선택지 (가로 배치) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="40dp">
+
+            <!-- 타입 1 -->
+            <FrameLayout
+                android:id="@+id/evolution_type_1"
+                android:layout_width="0dp"
+                android:layout_height="180dp"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="8dp">
+
+                <ImageView
+                    android:id="@+id/image_type_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/level2_1" />
+
+                <!-- 비활성화 오버레이 -->
+                <View
+                    android:id="@+id/overlay_type_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#80000000"
+                    android:visibility="gone" />
+
+                <!-- 잠금 텍스트 -->
+                <TextView
+                    android:id="@+id/lock_text_type_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="포인트 부족"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <!-- 타입 2 -->
+            <FrameLayout
+                android:id="@+id/evolution_type_2"
+                android:layout_width="0dp"
+                android:layout_height="180dp"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="8dp">
+
+                <ImageView
+                    android:id="@+id/image_type_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/level2_2" />
+
+                <View
+                    android:id="@+id/overlay_type_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#80000000"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/lock_text_type_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="포인트 부족"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <!-- 타입 3 -->
+            <FrameLayout
+                android:id="@+id/evolution_type_3"
+                android:layout_width="0dp"
+                android:layout_height="180dp"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="8dp">
+
+                <ImageView
+                    android:id="@+id/image_type_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/level2_3" />
+
+                <View
+                    android:id="@+id/overlay_type_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#80000000"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/lock_text_type_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="포인트 부족"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <!-- 텍스트 박스 배경 -->
+        <ImageView
+            android:layout_width="390dp"
+            android:layout_height="200dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/textbox"
+            android:layout_marginBottom="20dp" />
+
+        <!-- 설명 텍스트 -->
+        <TextView
+            android:id="@+id/evolution_description"
+            android:layout_width="280dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="-150dp"
+            android:layout_marginBottom="30dp"
+            android:gravity="center"
+            android:text="포인트를 모아 진화하세요!"
+            android:textAlignment="center"
+            android:textColor="#333333"
+            android:textSize="14sp" />
+
+        <!-- 취소 버튼 -->
+        <Button
+            android:id="@+id/cancel_evolution_button"
+            android:layout_width="150dp"
+            android:layout_height="45dp"
+            android:text="취소"
+            android:backgroundTint="#999999"
+            android:textColor="@android:color/white"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
+
+</FrameLayout>

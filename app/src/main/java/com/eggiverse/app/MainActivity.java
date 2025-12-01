@@ -1,11 +1,16 @@
 package com.eggiverse.app;
 
 import android.animation.ObjectAnimator;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -22,18 +27,24 @@ import com.eggiverse.app.databinding.ActivityMainBinding;
 import com.eggiverse.app.event.RandomEvent;
 import com.eggiverse.app.event.RandomEventDialog;
 import com.eggiverse.app.event.RandomEventManager;
+import com.eggiverse.app.evolution.EvolutionDialogManager;
+import com.eggiverse.app.evolution.EvolutionManager;
+import com.eggiverse.app.evolution.EvolutionType;
 import com.eggiverse.app.viewmodel.GameViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
 
     private ActivityMainBinding binding;
     private GameViewModel viewModel;
     private ObjectAnimator eggAnimator;
     private RandomEventManager eventManager;
     private ChatService chatService;
+    private EvolutionManager evolutionManager;
+    private EvolutionDialogManager evolutionDialogManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,13 +52,44 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+
         viewModel = new ViewModelProvider(this).get(GameViewModel.class);
         eventManager = RandomEventManager.getInstance(this);
         chatService = new ChatService();
 
+        // 진화 시스템 초기화
+        EvolutionManager.init(this);
+        evolutionManager = EvolutionManager.getInstance();
+        evolutionDialogManager = new EvolutionDialogManager(this);
+
+        // 진화 준비 완료 콜백 등록 (포인트 100 도달 시 자동 팝업)
+        evolutionManager.setOnEvolutionReadyListener(() -> {
+            if (evolutionManager.canEvolve()) {
+                Log.d(TAG, "Evolution ready! Showing dialog automatically");
+                evolutionDialogManager.showEvolutionChoiceDialog(new EvolutionDialogManager.EvolutionCallback() {
+                    @Override
+                    public void onEvolutionComplete(EvolutionType selectedType) {
+                        Log.d(TAG, "Evolution completed with type: " + selectedType);
+                        MainActivity.this.onEvolutionComplete(selectedType);
+                    }
+
+                    @Override
+                    public void onEvolutionCanceled() {
+                        Log.d(TAG, "Evolution canceled");
+                        Toast.makeText(MainActivity.this, "진화 취소됨", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+
+        checkAndShowEggNameDialog();
         setupStaticUi();
         observeGameState();
         setupListeners();
+
+        // 🧪 진화 팝업 테스트 방법:
+        // 아래 testEvolution() 주석을 제거하면 앱 시작 시 진화 팝업 테스트 가능
+        // testEvolution();
     }
 
     private void setupStaticUi() {
@@ -82,6 +124,53 @@ public class MainActivity extends AppCompatActivity {
         viewModel.getState().observe(this, this::renderState);
     }
 
+    private void checkAndShowEggNameDialog() {
+        SharedPreferences prefs = getSharedPreferences("egg_info", MODE_PRIVATE);
+        String savedName = prefs.getString("egg_name", null);
+
+        if (savedName == null) {
+            showEggNameDialog();
+        }
+    }
+
+    private void showEggNameDialog() {
+        Dialog dialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View customView = inflater.inflate(R.layout.dialog_egg_name, null);
+
+        EditText nameInput = customView.findViewById(R.id.eggNameInput);
+        Button confirmButton = customView.findViewById(R.id.confirmButton);
+        Button cancelButton = customView.findViewById(R.id.cancelButton);
+
+        nameInput.setText("알");
+        nameInput.selectAll();
+
+        confirmButton.setOnClickListener(v -> {
+            String name = nameInput.getText().toString().trim();
+            if (!name.isEmpty()) {
+                SharedPreferences prefs = getSharedPreferences("egg_info", MODE_PRIVATE);
+                prefs.edit().putString("egg_name", name).apply();
+
+                // EvolutionManager에도 사용자 이름 저장
+                evolutionManager.getState().setUserProvidedName(name);
+                evolutionManager.saveState();
+
+                dialog.dismiss();
+            } else {
+                Toast.makeText(MainActivity.this, "이름을 입력해주세요", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        cancelButton.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+
+        dialog.setContentView(customView);
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
     private void renderState(GameState state) {
         if (state == null) return;
 
@@ -98,14 +187,42 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateEggDrawable(int level) {
         int drawableId;
-        if (level >= 3) {
-            drawableId = R.drawable.level2;
-        } else if (level >= 2) {
-            drawableId = R.drawable.level1;
+
+        // 진화 시스템이 활성화되면 진화 타입에 따른 이미지 사용
+        if (evolutionManager != null && level >= 2) {
+            EvolutionType currentType = evolutionManager.getState().getCurrentType();
+            drawableId = getCharacterDrawableByLevelAndType(level, currentType);
         } else {
-            drawableId = R.drawable.pixel_egg;
+            // 진화 전 기본 이미지
+            if (level >= 3) {
+                drawableId = R.drawable.level2_1;
+            } else if (level >= 2) {
+                drawableId = R.drawable.level1;
+            } else {
+                drawableId = R.drawable.pixel_egg;
+            }
         }
         binding.eggImage.setImageResource(drawableId);
+    }
+
+    /**
+     * 레벨과 진화 타입에 따른 캐릭터 drawable ID 반환
+     */
+    private int getCharacterDrawableByLevelAndType(int level, EvolutionType type) {
+        int typeIndex = type.ordinal() + 1; // TYPE_1 -> 1, TYPE_2 -> 2, TYPE_3 -> 3
+        String resourceName = String.format("level%d_%d", level, typeIndex);
+
+        int resId = getResources().getIdentifier(
+                resourceName,
+                "drawable",
+                getPackageName()
+        );
+
+        // 리소스가 없으면 기본 이미지 반환
+        if (resId == 0) {
+            return level >= 3 ? R.drawable.level2_1 : R.drawable.level1;
+        }
+        return resId;
     }
 
     private void setStatValue(View root, String value) {
@@ -138,6 +255,31 @@ public class MainActivity extends AppCompatActivity {
             Snackbar.make(binding.getRoot(), "알이 좋아합니다! 행복도 +5", Snackbar.LENGTH_SHORT).show();
         });
 
+        // Long press egg to show evolution dialog
+        binding.eggImage.setOnLongClickListener(v -> {
+            Log.d(TAG, "Egg long press detected");
+            if (evolutionManager.canEvolve()) {
+                Log.d(TAG, "canEvolve() returned true, showing evolution dialog");
+                evolutionDialogManager.showEvolutionChoiceDialog(new EvolutionDialogManager.EvolutionCallback() {
+                    @Override
+                    public void onEvolutionComplete(EvolutionType selectedType) {
+                        Log.d(TAG, "Evolution completed with type: " + selectedType);
+                        MainActivity.this.onEvolutionComplete(selectedType);
+                    }
+
+                    @Override
+                    public void onEvolutionCanceled() {
+                        Log.d(TAG, "Evolution canceled");
+                        Toast.makeText(MainActivity.this, "진화 취소됨", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                Log.d(TAG, "canEvolve() returned false");
+                Toast.makeText(MainActivity.this, "진화는 레벨 2부터 가능합니다", Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        });
+
         binding.shopNav.setOnClickListener(v -> startActivity(new Intent(this, ShopActivity.class)));
         binding.gamesNav.setOnClickListener(v -> startActivity(new Intent(this, GameSelectActivity.class)));
         binding.myRoomNav.setOnClickListener(v -> startActivity(new Intent(this, MyRoomActivity.class)));
@@ -149,6 +291,7 @@ public class MainActivity extends AppCompatActivity {
         binding.chatModalOverlay.setOnClickListener(v -> binding.chatModalOverlay.setVisibility(View.GONE));
         binding.sendMessageButton.setOnClickListener(v -> handleSendMessage());
     }
+
 
     private void handleSendMessage() {
         String message = binding.chatInput.getText().toString().trim();
@@ -257,6 +400,12 @@ public class MainActivity extends AppCompatActivity {
     private void handleEventChoice(RandomEvent event, int choiceIndex, RandomEvent.EventChoice choice) {
         saveEvolutionStat(choice.getStatType(), choice.getStatValue());
 
+        // 진화 시스템에 경험치 추가 (100 도달 시 진화 팝업 자동 표시)
+        evolutionManager.addEvolutionExp(choice.getStatValue());
+
+        // 진화 타입별 포인트 추가 (TYPE_2, TYPE_3 선택 가능 여부 결정)
+        evolutionManager.addEvolutionPoints(choice.getStatType(), choice.getStatValue());
+
         String message = "📝 " + choice.getDescription();
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
@@ -268,6 +417,55 @@ public class MainActivity extends AppCompatActivity {
                 .putInt(statType, currentValue + value)
                 .apply();
     }
+
+    /**
+     * 진화 완료 콜백 처리
+     * 진화 다이얼로그에서 진화 완료 시 호출
+     */
+    public void onEvolutionComplete(EvolutionType selectedType) {
+        // 캐릭터 이미지 업데이트
+        updateEggDrawable(evolutionManager.getState().getCurrentLevel());
+
+        Toast.makeText(this, selectedType.getDisplayName() + "로 진화 완료! 🎉", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * 테스트용: 진화 팝업 테스트
+     * 사용: onCreate()에서 testEvolution() 주석 제거
+     *
+     * 실제 게임플레이:
+     * - RandomEvent 이벤트 선택 → handleEventChoice() 호출
+     * - handleEventChoice()에서 addEvolutionExp() 호출
+     * - 경험치 100 도달 시 자동으로 진화 팝업 표시
+     */
+    private void testEvolution() {
+        // 테스트 모드: 주석을 해제하여 테스트할 수 있습니다
+
+        // ====== 경험치 설정 (자유롭게 수정 가능) ======
+        // 총 경험치: 레벨 1→2는 100, 레벨 2→3은 200, 최대진화는 300
+        int testExperiencePoints = 100;  // 수정: 50, 100, 150, 200, 250, 300 등으로 변경 가능
+
+        // 레벨을 2로 설정
+        evolutionManager.testSetLevel(2);
+
+        // 저장된 사용자 이름 가져오기
+        SharedPreferences prefs = getSharedPreferences("egg_info", MODE_PRIVATE);
+        String savedName = prefs.getString("egg_name", "알");
+        evolutionManager.getState().setUserProvidedName(savedName);
+        evolutionManager.saveState();
+
+        // 설정한 경험치 추가 → 자동으로 진화 팝업 표시
+        evolutionManager.addEvolutionExp(testExperiencePoints);
+
+        // 포인트 설정 (선택 사항)
+        evolutionManager.addEvolutionPoints("adventurer", 100);   // TYPE_1: 100 (항상 선택 가능)
+        // evolutionManager.addEvolutionPoints("scholar", 200);     // TYPE_2: 200 (주석 해제하면 선택 가능)
+        // evolutionManager.addEvolutionPoints("collector", 200);   // TYPE_3: 200 (주석 해제하면 선택 가능)
+
+        Toast.makeText(this, "테스트 모드: 경험치 " + testExperiencePoints + " 추가됨 → 진화 팝업 표시", Toast.LENGTH_SHORT).show();
+
+    }
+
 
     @Override
     protected void onDestroy() {

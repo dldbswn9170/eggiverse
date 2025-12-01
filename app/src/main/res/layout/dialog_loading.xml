@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#FF1A1A2E">
+
+    <TextView
+        android:id="@+id/loadingText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🌌 우주 인테리어를 적용하는 중..."
+        android:textColor="#FFC107"
+        android:fontFamily="@font/mainfont"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+</LinearLayout>
