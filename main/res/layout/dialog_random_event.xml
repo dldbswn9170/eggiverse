@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    android:background="@android:color/transparent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#1A1A2E"
+        android:padding="24dp"
+        android:layout_margin="16dp">
+
+        <!-- 이벤트 제목 -->
+        <TextView
+            android:id="@+id/eventTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="✨ 신비한 별똥별이 떨어졌다!"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#FFC107"
+            android:gravity="center"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- 구분선 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#333344"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- 이벤트 설명 -->
+        <TextView
+            android:id="@+id/eventDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="밤하늘에서 반짝이는 별똥별이 알 근처에 떨어졌어요.\n이 별똥별의 빛은 신비한 에너지를 품고 있는 것 같아요."
+            android:textSize="15sp"
+            android:textColor="@android:color/white"
+            android:lineSpacingExtra="4dp"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- 선택지 1 -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/choice1Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="#2A2A40"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp"
+            app:strokeColor="@android:color/transparent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/choice1Text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="별똥별을 만져본다"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:layout_marginBottom="6dp"/>
+
+                <TextView
+                    android:id="@+id/choice1Desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="호기심 +5, 용기 +3"
+                    android:textSize="13sp"
+                    android:textColor="#888899"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 선택지 2 -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/choice2Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="#2A2A40"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp"
+            app:strokeColor="@android:color/transparent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/choice2Text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="멀리서 조용히 관찰한다"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:layout_marginBottom="6dp"/>
+
+                <TextView
+                    android:id="@+id/choice2Desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="지혜 +5, 신중함 +3"
+                    android:textSize="13sp"
+                    android:textColor="#888899"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 선택지 3 -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/choice3Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="#2A2A40"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp"
+            app:strokeColor="@android:color/transparent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/choice3Text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="별똥별을 주워서 보관한다"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:layout_marginBottom="6dp"/>
+
+                <TextView
+                    android:id="@+id/choice3Desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="수집욕 +5, 애착 +3"
+                    android:textSize="13sp"
+                    android:textColor="#888899"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</ScrollView>

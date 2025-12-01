@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="space_primary">#2D1B4E</color>
+    <color name="space_background">#1A0F2E</color>
+    <color name="space_card">#1F1335</color>
+    <color name="amber_accent">#FFC107</color>
+    <color name="pink_accent">#F06292</color>
+    <color name="blue_accent">#64B5F6</color>
+    <color name="green_accent">#81C784</color>
+    <color name="stat_bg">#26FFFFFF</color>
+</resources>
+

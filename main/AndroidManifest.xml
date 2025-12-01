@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.eggiverse.app">
+
+    <!-- 인터넷 권한 추가 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:name=".EggiverseApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Eggiverse"
+        android:usesCleartextTraffic="false">
+
+        <activity android:name=".games.MemoryGameActivity" />
+        <activity android:name=".games.SlidingPuzzleActivity" />
+        <activity android:name=".games.StarTapGameActivity" />
+        <activity android:name=".games.DoodleJumpActivity" />
+        <activity android:name=".games.FlappyBirdActivity" />
+        <activity android:name=".games.AlienTypingGameActivity" />
+        <activity android:name=".games.RhythmGameActivity" />
+        <activity android:name=".GameSelectActivity" />
+        <activity android:name=".ShopActivity" />
+        <activity android:name=".MyRoomActivity" />
+        <activity android:name=".SettingsActivity" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>
