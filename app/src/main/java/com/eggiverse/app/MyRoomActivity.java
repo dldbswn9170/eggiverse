@@ -1,6 +1,8 @@
 package com.eggiverse.app;
 
 import android.app.Dialog;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -17,12 +19,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.eggiverse.app.data.db.entity.GameState;
 import com.eggiverse.app.data.ShopData;
 import com.eggiverse.app.data.ShopItem;
-import com.eggiverse.app.data.db.entity.GameState;
 import com.eggiverse.app.databinding.ActivityMyRoomBinding;
 import com.eggiverse.app.myroom.FurnitureAdapter;
 import com.eggiverse.app.viewmodel.GameViewModel;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
@@ -46,6 +50,17 @@ public class MyRoomActivity extends AppCompatActivity {
         setupToolbar();
         observeDecorations();
         setupEditButton();
+        startEggAnimation();
+    }
+
+    /**
+     * 알 GIF 애니메이션 시작
+     */
+    private void startEggAnimation() {
+        Drawable drawable = binding.eggImageRoom.getDrawable();
+        if (drawable instanceof Animatable) {
+            ((Animatable) drawable).start();
+        }
     }
 
     private void setupToolbar() {
@@ -68,11 +83,16 @@ public class MyRoomActivity extends AppCompatActivity {
         viewModel.getState().observe(this, this::renderDecorations);
     }
 
+    /**
+     * 특정 조합(구름침대+달무드등+실크커튼)일 때만 배경 이미지 변경
+     * 나머지는 원래대로 텍스트로 표시
+     */
     private void renderDecorations(GameState state) {
         if (state == null) return;
 
         Set<String> decorations = state.getDecorations();
 
+        // 빈 경우
         if (decorations.isEmpty()) {
             binding.roomBackground.setImageResource(R.drawable.bg_myroom);
             binding.emptyDecorations.setVisibility(View.VISIBLE);
@@ -82,20 +102,26 @@ public class MyRoomActivity extends AppCompatActivity {
 
         binding.emptyDecorations.setVisibility(View.GONE);
 
+        // 특정 조합 체크: 구름침대 + 달 무드등 + 실크 커튼
         boolean isSpecialCombo = decorations.size() == 3 &&
                 decorations.contains("deco_cloud_bed") &&
                 decorations.contains("deco_moon_light") &&
                 decorations.contains("deco_silk_curtain");
 
         if (isSpecialCombo) {
+            // 특별 조합 → 배경 이미지 변경, 텍스트 안 보이게
             binding.roomBackground.setImageResource(R.drawable.myroom_cloudbed_moonlight_silkcurtain);
             binding.decoContainer.removeAllViews();
         } else {
+            // 일반 조합 → 기본 배경 + 텍스트로 표시
             binding.roomBackground.setImageResource(R.drawable.bg_myroom);
             showDecorationsAsText(decorations);
         }
     }
 
+    /**
+     * 원래 방식: 텍스트로 가구 이름 표시
+     */
     private void showDecorationsAsText(Set<String> decorations) {
         binding.decoContainer.removeAllViews();
 
@@ -125,28 +151,30 @@ public class MyRoomActivity extends AppCompatActivity {
     }
 
     private void showFurnitureBottomSheet() {
-        Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        BottomSheetDialog dialog = new BottomSheetDialog(this, R.style.TransparentBottomSheetDialog);
 
         View bottomSheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_furniture, null);
         dialog.setContentView(bottomSheetView);
 
-        Window window = dialog.getWindow();
-        if (window != null) {
-            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            window.setGravity(Gravity.BOTTOM);
-            window.setBackgroundDrawableResource(android.R.color.transparent);
-            window.setDimAmount(0.5f);
+        // BottomSheetDialog 스타일 설정
+        dialog.getBehavior().setState(BottomSheetBehavior.STATE_EXPANDED);
+        dialog.getBehavior().setSkipCollapsed(true);
+        dialog.getBehavior().setDraggable(true);
 
-            WindowManager.LayoutParams params = window.getAttributes();
+        // 높이 설정 (70%)
+        bottomSheetView.post(() -> {
+            View parent = (View) bottomSheetView.getParent();
+            ViewGroup.LayoutParams params = parent.getLayoutParams();
             params.height = (int) (getResources().getDisplayMetrics().heightPixels * 0.7);
-            window.setAttributes(params);
-        }
+            parent.setLayoutParams(params);
+        });
 
+        // RecyclerView 설정 - GridLayout (3열)
         RecyclerView recyclerView = bottomSheetView.findViewById(R.id.furnitureRecycler);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         recyclerView.setLayoutManager(gridLayoutManager);
 
+        // 보유한 가구 목록 가져오기
         GameState state = viewModel.getState().getValue();
         List<ShopItem> ownedFurniture = new ArrayList<>();
         if (state != null) {
@@ -158,21 +186,48 @@ public class MyRoomActivity extends AppCompatActivity {
             }
         }
 
+        // 어댑터 설정
         furnitureAdapter = new FurnitureAdapter(ownedFurniture);
 
+        // 현재 적용된 가구 선택 상태 복원
         if (state != null) {
             furnitureAdapter.setSelectedItems(state.getDecorations());
         }
 
         recyclerView.setAdapter(furnitureAdapter);
 
+        // 적용하기 버튼
         MaterialButton applyButton = bottomSheetView.findViewById(R.id.applyButton);
         applyButton.setOnClickListener(v -> {
             Set<String> selectedIds = furnitureAdapter.getSelectedIds();
-            viewModel.updateDecorations(selectedIds);
             dialog.dismiss();
+            showLoadingDialog(selectedIds);
         });
 
         dialog.show();
+    }
+
+    /**
+     * 로딩 다이얼로그 표시
+     */
+    private void showLoadingDialog(Set<String> selectedIds) {
+        android.app.Dialog loadingDialog = new android.app.Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        loadingDialog.setContentView(R.layout.dialog_loading);
+        loadingDialog.setCancelable(false);
+        loadingDialog.show();
+
+        // 텍스트 반짝임 애니메이션 (코드로 직접 생성)
+        TextView loadingText = loadingDialog.findViewById(R.id.loadingText);
+        android.view.animation.AlphaAnimation blink = new android.view.animation.AlphaAnimation(1.0f, 0.3f);
+        blink.setDuration(800);
+        blink.setRepeatMode(android.view.animation.Animation.REVERSE);
+        blink.setRepeatCount(android.view.animation.Animation.INFINITE);
+        loadingText.startAnimation(blink);
+
+        // 1.5초 후 적용
+        binding.getRoot().postDelayed(() -> {
+            viewModel.updateDecorations(selectedIds);
+            loadingDialog.dismiss();
+        }, 1500);
     }
 }

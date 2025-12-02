@@ -23,7 +23,6 @@
             android:layout_height="60dp"
             android:background="@drawable/bg_game_icon"
             android:padding="12dp"
-            android:tint="@android:color/white"
             android:src="@android:drawable/ic_media_play" />
 
         <LinearLayout
@@ -59,4 +58,3 @@
             android:tint="@android:color/white" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
-

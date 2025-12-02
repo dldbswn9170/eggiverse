@@ -4,6 +4,7 @@
         <item name="colorPrimary">@color/space_primary</item>
         <item name="colorPrimaryVariant">@color/space_background</item>
         <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:navigationBarColor">@color/space_background</item>

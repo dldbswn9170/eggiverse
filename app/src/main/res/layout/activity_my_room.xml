@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/space_background">
+    android:background="@color/space_background"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/roomToolbar"
@@ -29,7 +30,18 @@
             android:id="@+id/roomBackground"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:src="@drawable/bg_myroom"
             android:scaleType="centerCrop" />
+
+        <!-- 알 이미지 (GIF) -->
+        <ImageView
+            android:id="@+id/eggImageRoom"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="100dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/pixel_eggmove" />
 
         <!-- 방 꾸미기 버튼 (배경 안쪽 상단) -->
         <com.google.android.material.button.MaterialButton

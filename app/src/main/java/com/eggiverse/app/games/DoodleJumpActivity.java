@@ -154,6 +154,7 @@ public class DoodleJumpActivity extends AppCompatActivity {
         private int screenWidth;
         private int screenHeight;
         private Bitmap characterBitmap;
+        private Bitmap backgroundBitmap;
         private int characterLevel;
 
         // 게임 상수
@@ -187,6 +188,7 @@ public class DoodleJumpActivity extends AppCompatActivity {
             platforms = new ArrayList<>();
             isRunning = false;
             loadCharacterBitmap();
+            loadBackgroundBitmap();
         }
 
         private void loadCharacterBitmap() {
@@ -202,10 +204,24 @@ public class DoodleJumpActivity extends AppCompatActivity {
             }
         }
 
+        private void loadBackgroundBitmap() {
+            try {
+                backgroundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bg_game);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
             screenWidth = getWidth();
             screenHeight = getHeight();
+
+            // 배경 이미지 화면 크기에 맞게 조정
+            if (backgroundBitmap != null) {
+                backgroundBitmap = Bitmap.createScaledBitmap(backgroundBitmap, screenWidth, screenHeight, true);
+            }
+
             initGame();
 
             gameThread = new GameThread(getHolder());
@@ -228,10 +244,17 @@ public class DoodleJumpActivity extends AppCompatActivity {
             doodle = new Doodle(screenWidth / 2.0f, screenHeight - 100);
 
             platforms.clear();
-            // 초기 플랫폼들 생성
-            for (int i = 0; i < 10; i++) {
+
+            // 첫 번째 플랫폼: 플레이어 바로 아래에 배치 (시작 발판)
+            platforms.add(new Platform(screenWidth / 2.0f - PLATFORM_WIDTH / 2.0f,
+                    screenHeight - 50,
+                    PLATFORM_WIDTH,
+                    PLATFORM_HEIGHT));
+
+            // 나머지 플랫폼들 생성
+            for (int i = 1; i < 10; i++) {
                 float x = random.nextInt(screenWidth - PLATFORM_WIDTH);
-                float y = screenHeight - i * PLATFORM_SPACING - 100;
+                float y = screenHeight - i * PLATFORM_SPACING - 50;
                 platforms.add(new Platform(x, y, PLATFORM_WIDTH, PLATFORM_HEIGHT));
             }
         }
@@ -283,8 +306,13 @@ public class DoodleJumpActivity extends AppCompatActivity {
         private void render(Canvas canvas) {
             if (canvas == null) return;
 
-            // 배경 그리기
-            canvas.drawColor(Color.parseColor("#87CEEB"));
+            // 배경 이미지 그리기
+            if (backgroundBitmap != null) {
+                canvas.drawBitmap(backgroundBitmap, 0, 0, null);
+            } else {
+                // 이미지 로드 실패 시 기본 배경색
+                canvas.drawColor(Color.parseColor("#87CEEB"));
+            }
 
             // 플랫폼 그리기
             Paint platformPaint = new Paint();

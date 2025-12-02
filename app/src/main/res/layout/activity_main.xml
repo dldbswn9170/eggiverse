@@ -2,8 +2,28 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/space_background">
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/backgroundImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg_game"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/overlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#AA000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/container"
@@ -79,7 +99,6 @@
                     android:contentDescription="@string/app_name" />
             </LinearLayout>
 
-            <!-- 새로 추가: 텍스트 풍선 -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/chatBalloon"
                 android:layout_width="wrap_content"
@@ -87,7 +106,7 @@
                 android:layout_marginBottom="24dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/space_card"
+                app:cardBackgroundColor="@android:color/white"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground">
@@ -105,7 +124,7 @@
                         android:layout_height="wrap_content"
                         android:text="💬 대화하기"
                         android:textSize="14sp"
-                        android:textColor="@android:color/white"
+                        android:textColor="#333333"
                         android:maxWidth="200dp" />
 
                     <ImageView
@@ -113,7 +132,7 @@
                         android:layout_height="16dp"
                         android:layout_marginStart="8dp"
                         android:src="@android:drawable/ic_menu_send"
-                        app:tint="@color/amber_accent" />
+                        app:tint="#666666" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -145,7 +164,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
-                    android:backgroundTint="@color/blue_accent"
+                    android:backgroundTint="@color/amber_accent"
                     android:text="@string/feed"
                     android:textColor="@android:color/white"
                     android:drawableStart="@android:drawable/ic_menu_add" />
@@ -160,7 +179,7 @@
                     android:backgroundTint="@color/pink_accent"
                     android:text="@string/play"
                     android:textColor="@android:color/white"
-                    android:drawableStart="@android:drawable/ic_media_play" />
+                    android:drawableStart="@drawable/menu_game" />
             </LinearLayout>
 
             <LinearLayout
@@ -186,8 +205,8 @@
                     <ImageView
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:src="@android:drawable/ic_menu_manage"
-                        app:tint="@android:color/white" />
+                        android:src="@drawable/menu_shop"
+                        />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -214,8 +233,8 @@
                     <ImageView
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:src="@android:drawable/ic_media_play"
-                        app:tint="@android:color/white" />
+                        android:src="@drawable/menu_game"
+                        />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -242,8 +261,8 @@
                     <ImageView
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:src="@android:drawable/ic_menu_gallery"
-                        app:tint="@android:color/white" />
+                        android:src="@drawable/menu_myroom"
+                        />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -270,8 +289,8 @@
                     <ImageView
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:src="@android:drawable/ic_menu_preferences"
-                        app:tint="@android:color/white" />
+                        android:src="@drawable/menu_setting"
+                        />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -291,7 +310,7 @@
         android:id="@+id/chatModalOverlay"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#CC1A0F2E"
+        android:background="#CC000000"
         android:visibility="gone"
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -304,7 +323,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="24dp"
             android:layout_gravity="center"
-            app:cardBackgroundColor="@color/space_card"
             app:cardCornerRadius="16dp"
             app:cardElevation="8dp">
 
@@ -327,7 +345,7 @@
                         android:text="알과 대화하기"
                         android:textSize="18sp"
                         android:textStyle="bold"
-                        android:textColor="@android:color/white" />
+                        android:textColor="#333333" />
 
                     <ImageView
                         android:id="@+id/closeModalButton"
@@ -338,7 +356,7 @@
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
                         android:focusable="true"
-                        app:tint="@color/pink_accent" />
+                        app:tint="#666666" />
                 </LinearLayout>
 
                 <View
@@ -346,13 +364,13 @@
                     android:layout_height="1dp"
                     android:layout_marginTop="12dp"
                     android:layout_marginBottom="16dp"
-                    android:background="#44FFFFFF" />
+                    android:background="#EEEEEE" />
 
                 <ScrollView
                     android:id="@+id/chatScrollView"
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
-                    android:background="@color/space_background"
+                    android:background="#F5F5F5"
                     android:padding="12dp">
 
                     <LinearLayout
@@ -360,9 +378,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
-
-                        <!-- 더미 메시지들이 여기에 동적으로 추가됩니다 -->
-
                     </LinearLayout>
                 </ScrollView>
 
@@ -379,8 +394,6 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="메시지를 입력하세요..."
-                        android:textColorHint="#99FFFFFF"
-                        android:textColor="@android:color/white"
                         android:padding="12dp"
                         android:background="@android:drawable/edit_text"
                         android:inputType="text"
@@ -392,8 +405,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="전송"
-                        app:backgroundTint="@color/amber_accent"
-                        android:textColor="@color/space_primary"
                         android:textSize="14sp" />
                 </LinearLayout>
 
@@ -401,12 +412,12 @@
         </androidx.cardview.widget.CardView>
     </FrameLayout>
 
-    <!-- 먹이 모달 -->
+    <!-- 먹이 선택 모달 -->
     <FrameLayout
         android:id="@+id/foodModalOverlay"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#CC1A0F2E"
+        android:background="#CC000000"
         android:visibility="gone"
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -419,9 +430,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="24dp"
             android:layout_gravity="center"
-            app:cardBackgroundColor="@color/space_card"
             app:cardCornerRadius="16dp"
-            app:cardElevation="8dp">
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="@android:color/white">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -439,10 +450,10 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="먹이 주기"
+                        android:text="🍽️ 먹이 선택하기"
                         android:textSize="18sp"
                         android:textStyle="bold"
-                        android:textColor="@android:color/white" />
+                        android:textColor="#333333" />
 
                     <ImageView
                         android:id="@+id/closeFoodModalButton"
@@ -453,35 +464,44 @@
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
                         android:focusable="true"
-                        app:tint="@color/pink_accent" />
+                        app:tint="#666666" />
                 </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="#EEEEEE" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/foodRecyclerView"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:layout_marginTop="16dp" />
+                    android:layout_height="350dp"
+                    android:scrollbars="vertical"
+                    android:padding="4dp" />
 
                 <TextView
                     android:id="@+id/emptyFoodText"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="보유한 먹이가 없어요!"
-                    android:textColor="#99FFFFFF"
+                    android:layout_height="350dp"
+                    android:text="보유한 먹이가 없습니다.
+상점에서 먹이를 구매해주세요!"
+                    android:textColor="#999999"
+                    android:textSize="16sp"
                     android:gravity="center"
-                    android:padding="32dp"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </FrameLayout>
 
-    <!-- 장난감 모달 -->
+    <!-- 장난감 선택 모달 -->
     <FrameLayout
         android:id="@+id/toyModalOverlay"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#CC1A0F2E"
+        android:background="#CC000000"
         android:visibility="gone"
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -494,9 +514,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="24dp"
             android:layout_gravity="center"
-            app:cardBackgroundColor="@color/space_card"
             app:cardCornerRadius="16dp"
-            app:cardElevation="8dp">
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="@android:color/white">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -514,10 +534,10 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="놀아주기"
+                        android:text="🎾 장난감 선택하기"
                         android:textSize="18sp"
                         android:textStyle="bold"
-                        android:textColor="@android:color/white" />
+                        android:textColor="#333333" />
 
                     <ImageView
                         android:id="@+id/closeToyModalButton"
@@ -528,24 +548,33 @@
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
                         android:focusable="true"
-                        app:tint="@color/pink_accent" />
+                        app:tint="#666666" />
                 </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="#EEEEEE" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/toyRecyclerView"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:layout_marginTop="16dp" />
+                    android:layout_height="350dp"
+                    android:scrollbars="vertical"
+                    android:padding="4dp" />
 
                 <TextView
                     android:id="@+id/emptyToyText"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="보유한 장난감이 없어요!"
-                    android:textColor="#99FFFFFF"
+                    android:layout_height="350dp"
+                    android:text="보유한 장난감이 없습니다.
+상점에서 장난감을 구매해주세요!"
+                    android:textColor="#999999"
+                    android:textSize="16sp"
                     android:gravity="center"
-                    android:padding="32dp"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

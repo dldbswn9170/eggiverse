@@ -52,7 +52,8 @@ public class GameRepository {
         executorService.execute(() -> {
             GameState latestGameState = gameStateDao.getLatestGameState();
             if (latestGameState == null) {
-                latestGameState = new GameState(System.currentTimeMillis(), 1, 1, 100, 0, 80, 80);
+                // 초기 게임 상태 생성 - 코인을 99999로 설정
+                latestGameState = new GameState(System.currentTimeMillis(), 1, 1, 99999, 0, 80, 80);
                 gameStateDao.insert(latestGameState);
             } else {
                 updateStatsOverTime(latestGameState);
@@ -132,7 +133,7 @@ public class GameRepository {
         GameState currentState = stateLiveData.getValue();
         if (currentState != null) {
             int rewardCoins = score / 10;
-            int rewardExp = score / 5;
+            int rewardExp = 100;
 
             currentState.setCoin(currentState.getCoin() + rewardCoins);
 
@@ -146,6 +147,15 @@ public class GameRepository {
                 currentState.setExp(newExp);
             }
 
+            updateGameState(currentState);
+        }
+    }
+
+    // 테스트용: 코인 직접 설정
+    public void setCoins(int coins) {
+        GameState currentState = stateLiveData.getValue();
+        if (currentState != null) {
+            currentState.setCoin(coins);
             updateGameState(currentState);
         }
     }

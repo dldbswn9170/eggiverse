@@ -20,8 +20,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.eggiverse.app.adapter.InventoryAdapter;
 import com.eggiverse.app.chat.ChatService;
+import com.eggiverse.app.data.GameRepository;
+import com.eggiverse.app.data.ShopData;
+import com.eggiverse.app.data.ShopItem;
 import com.eggiverse.app.data.db.entity.GameState;
 import com.eggiverse.app.databinding.ActivityMainBinding;
 import com.eggiverse.app.event.RandomEvent;
@@ -33,7 +38,12 @@ import com.eggiverse.app.evolution.EvolutionType;
 import com.eggiverse.app.viewmodel.GameViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -45,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private ChatService chatService;
     private EvolutionManager evolutionManager;
     private EvolutionDialogManager evolutionDialogManager;
+    private GameRepository gameRepository;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,10 +63,10 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
         viewModel = new ViewModelProvider(this).get(GameViewModel.class);
         eventManager = RandomEventManager.getInstance(this);
         chatService = new ChatService();
+        gameRepository = GameRepository.get(); // GameRepository 초기화
 
         // 진화 시스템 초기화
         EvolutionManager.init(this);
@@ -90,6 +101,9 @@ public class MainActivity extends AppCompatActivity {
         // 🧪 진화 팝업 테스트 방법:
         // 아래 testEvolution() 주석을 제거하면 앱 시작 시 진화 팝업 테스트 가능
         // testEvolution();
+
+        // onCreate()에서
+        gameRepository.setCoins(99999);
     }
 
     private void setupStaticUi() {
@@ -238,17 +252,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        binding.feedButton.setOnClickListener(v -> {
-            checkAndShowEventForFeed(() -> {
-                viewModel.feedEgg(20);
-                Snackbar.make(binding.getRoot(), "먹이를 주었습니다! 배고픔 +20", Snackbar.LENGTH_SHORT).show();
-            });
-        });
+        // 먹이 주기 버튼 - 모달 표시
+        binding.feedButton.setOnClickListener(v -> showFoodModal());
 
-        binding.playButton.setOnClickListener(v -> {
-            viewModel.playWithEgg(20);
-            Snackbar.make(binding.getRoot(), "놀아줬습니다! 행복도 +20", Snackbar.LENGTH_SHORT).show();
-        });
+        // 놀아 주기 버튼 - 모달 표시
+        binding.playButton.setOnClickListener(v -> showToyModal());
+
+        // 먹이 모달 닫기
+        binding.closeFoodModalButton.setOnClickListener(v ->
+                binding.foodModalOverlay.setVisibility(View.GONE));
+
+        // 장난감 모달 닫기
+        binding.closeToyModalButton.setOnClickListener(v ->
+                binding.toyModalOverlay.setVisibility(View.GONE));
+
+        // 오버레이 클릭시 닫기
+        binding.foodModalOverlay.setOnClickListener(v ->
+                binding.foodModalOverlay.setVisibility(View.GONE));
+
+        binding.toyModalOverlay.setOnClickListener(v ->
+                binding.toyModalOverlay.setVisibility(View.GONE));
 
         binding.eggImage.setOnClickListener(v -> {
             viewModel.playWithEgg(5);
@@ -292,6 +315,150 @@ public class MainActivity extends AppCompatActivity {
         binding.sendMessageButton.setOnClickListener(v -> handleSendMessage());
     }
 
+    /**
+     * 먹이 선택 모달 표시
+     */
+    private void showFoodModal() {
+        // DB에서 보유한 먹이 아이템 가져오기
+        List<InventoryAdapter.InventoryItemData> foodItems = getUserFoodInventory();
+
+        if (foodItems.isEmpty()) {
+            // 먹이가 없으면 안내 텍스트 표시
+            binding.foodRecyclerView.setVisibility(View.GONE);
+            binding.emptyFoodText.setVisibility(View.VISIBLE);
+        } else {
+            // 먹이가 있으면 RecyclerView에 표시
+            binding.foodRecyclerView.setVisibility(View.VISIBLE);
+            binding.emptyFoodText.setVisibility(View.GONE);
+
+            InventoryAdapter adapter = new InventoryAdapter(this, foodItems, itemData -> {
+                // 아이템 클릭시 먹이 사용
+                useFoodItem(itemData);
+                binding.foodModalOverlay.setVisibility(View.GONE);
+            });
+
+            binding.foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            binding.foodRecyclerView.setAdapter(adapter);
+        }
+
+        binding.foodModalOverlay.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * 장난감 선택 모달 표시
+     */
+    private void showToyModal() {
+        // DB에서 보유한 장난감 아이템 가져오기
+        List<InventoryAdapter.InventoryItemData> toyItems = getUserToyInventory();
+
+        if (toyItems.isEmpty()) {
+            binding.toyRecyclerView.setVisibility(View.GONE);
+            binding.emptyToyText.setVisibility(View.VISIBLE);
+        } else {
+            binding.toyRecyclerView.setVisibility(View.VISIBLE);
+            binding.emptyToyText.setVisibility(View.GONE);
+
+            InventoryAdapter adapter = new InventoryAdapter(this, toyItems, itemData -> {
+                // 아이템 클릭시 장난감 사용
+                useToyItem(itemData);
+                binding.toyModalOverlay.setVisibility(View.GONE);
+            });
+
+            binding.toyRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            binding.toyRecyclerView.setAdapter(adapter);
+        }
+
+        binding.toyModalOverlay.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * DB에서 사용자의 먹이 인벤토리 가져오기
+     */
+    private List<InventoryAdapter.InventoryItemData> getUserFoodInventory() {
+        List<InventoryAdapter.InventoryItemData> inventory = new ArrayList<>();
+
+        // GameState에서 보유 아이템 가져오기
+        GameState currentState = gameRepository.getGameState().getValue();
+        if (currentState == null) {
+            return inventory;
+        }
+
+        Set<String> ownedItems = currentState.getOwnedItems();
+
+        // 아이템 ID별 수량 카운트
+        Map<String, Integer> itemCounts = new HashMap<>();
+        for (String itemId : ownedItems) {
+            itemCounts.put(itemId, itemCounts.getOrDefault(itemId, 0) + 1);
+        }
+
+        // FOOD 타입만 필터링
+        for (Map.Entry<String, Integer> entry : itemCounts.entrySet()) {
+            ShopItem item = ShopData.findById(entry.getKey());
+            if (item != null && item.getType() == ShopItem.ItemType.FOOD) {
+                inventory.add(new InventoryAdapter.InventoryItemData(item, entry.getValue()));
+            }
+        }
+
+        return inventory;
+    }
+
+    /**
+     * DB에서 사용자의 장난감 인벤토리 가져오기
+     */
+    private List<InventoryAdapter.InventoryItemData> getUserToyInventory() {
+        List<InventoryAdapter.InventoryItemData> inventory = new ArrayList<>();
+
+        // GameState에서 보유 아이템 가져오기
+        GameState currentState = gameRepository.getGameState().getValue();
+        if (currentState == null) {
+            return inventory;
+        }
+
+        Set<String> ownedItems = currentState.getOwnedItems();
+
+        // 아이템 ID별 수량 카운트
+        Map<String, Integer> itemCounts = new HashMap<>();
+        for (String itemId : ownedItems) {
+            itemCounts.put(itemId, itemCounts.getOrDefault(itemId, 0) + 1);
+        }
+
+        // TOY 타입만 필터링
+        for (Map.Entry<String, Integer> entry : itemCounts.entrySet()) {
+            ShopItem item = ShopData.findById(entry.getKey());
+            if (item != null && item.getType() == ShopItem.ItemType.TOY) {
+                inventory.add(new InventoryAdapter.InventoryItemData(item, entry.getValue()));
+            }
+        }
+
+        return inventory;
+    }
+
+    /**
+     * 먹이 아이템 사용
+     */
+    private void useFoodItem(InventoryAdapter.InventoryItemData itemData) {
+        // 이벤트 확인 후 먹이 주기
+        checkAndShowEventForFeed(() -> {
+            // GameRepository를 통해 아이템 사용
+            gameRepository.useItem(itemData.item);
+
+            Snackbar.make(binding.getRoot(),
+                    itemData.item.getName() + "을(를) 주었습니다! 배고픔 +" + itemData.item.getEffectValue(),
+                    Snackbar.LENGTH_SHORT).show();
+        });
+    }
+
+    /**
+     * 장난감 아이템 사용
+     */
+    private void useToyItem(InventoryAdapter.InventoryItemData itemData) {
+        // GameRepository를 통해 아이템 사용
+        gameRepository.useItem(itemData.item);
+
+        Snackbar.make(binding.getRoot(),
+                itemData.item.getName() + "(으)로 놀아줬습니다! 행복도 +" + itemData.item.getEffectValue(),
+                Snackbar.LENGTH_SHORT).show();
+    }
 
     private void handleSendMessage() {
         String message = binding.chatInput.getText().toString().trim();
@@ -466,7 +633,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     @Override
     protected void onDestroy() {
         if (eggAnimator != null) {
@@ -474,4 +640,5 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onDestroy();
     }
+
 }
