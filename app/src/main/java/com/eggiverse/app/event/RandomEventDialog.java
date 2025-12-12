@@ -2,6 +2,7 @@ package com.eggiverse.app.event;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -13,6 +14,8 @@ import com.eggiverse.app.R;
 import com.google.android.material.card.MaterialCardView;
 
 public class RandomEventDialog extends Dialog {
+
+    private static final String TAG = "RandomEventDialog";
 
     public interface OnChoiceSelectedListener {
         void onChoiceSelected(int choiceIndex, RandomEvent.EventChoice choice);
@@ -30,6 +33,8 @@ public class RandomEventDialog extends Dialog {
     }
 
     private void setupDialog() {
+        Log.d(TAG, "setupDialog() - 랜덤 이벤트 다이얼로그 설정 시작");
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_random_event, null);
@@ -39,6 +44,8 @@ public class RandomEventDialog extends Dialog {
         if (getWindow() != null) {
             getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
+
+        Log.d(TAG, "setupDialog() - 이벤트 ID: " + event.getId() + ", 제목: " + event.getTitle());
 
         // 뷰 바인딩
         TextView titleView = view.findViewById(R.id.eventTitle);
@@ -86,13 +93,19 @@ public class RandomEventDialog extends Dialog {
 
     private void setupChoiceCard(MaterialCardView card, int index, RandomEvent.EventChoice choice) {
         card.setOnClickListener(v -> {
+            Log.d(TAG, "setupChoiceCard() - 선택지 클릭됨. Index: " + index + ", StatType: " + choice.getStatType() + ", Value: " + choice.getStatValue());
+
             // 선택 효과 (테두리 색상 변경)
             card.setStrokeColor(0xFFFFC107); // space_accent 색상
 
             // 약간의 딜레이 후 콜백 호출 및 다이얼로그 닫기
             card.postDelayed(() -> {
+                Log.d(TAG, "setupChoiceCard() - 콜백 호출 전");
                 if (listener != null) {
+                    Log.d(TAG, "setupChoiceCard() - listener.onChoiceSelected() 호출");
                     listener.onChoiceSelected(index, choice);
+                } else {
+                    Log.d(TAG, "setupChoiceCard() - listener가 null!");
                 }
                 dismiss();
             }, 200);

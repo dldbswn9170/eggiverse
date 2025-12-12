@@ -98,11 +98,6 @@ public class MainActivity extends AppCompatActivity {
         observeGameState();
         setupListeners();
 
-        // 🧪 진화 팝업 테스트 방법:
-        // 아래 testEvolution() 주석을 제거하면 앱 시작 시 진화 팝업 테스트 가능
-        // testEvolution();
-
-        // onCreate()에서
         gameRepository.setCoins(99999);
     }
 
@@ -251,6 +246,38 @@ public class MainActivity extends AppCompatActivity {
         valueView.setText(String.format(Locale.getDefault(), "%d%%", value));
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume() called - checking evolution condition");
+
+        // 게임에서 돌아왔을 때 진화 조건 확인
+        int currentExp = evolutionManager.getState().getEvolutionExp();
+        int lastShownExp = evolutionManager.getState().getLastShownExpForPopup();
+
+        if (evolutionManager.canEvolve() && currentExp >= 100 && currentExp != lastShownExp) {
+            Log.d(TAG, "Evolution condition met on resume - showing dialog. EXP: " + currentExp);
+
+            // 이 경험치로 팝업을 보였다고 기록
+            evolutionManager.getState().setLastShownExpForPopup(currentExp);
+            evolutionManager.saveState();
+
+            evolutionDialogManager.showEvolutionChoiceDialog(new EvolutionDialogManager.EvolutionCallback() {
+                @Override
+                public void onEvolutionComplete(EvolutionType selectedType) {
+                    Log.d(TAG, "Evolution completed with type: " + selectedType);
+                    MainActivity.this.onEvolutionComplete(selectedType);
+                }
+
+                @Override
+                public void onEvolutionCanceled() {
+                    Log.d(TAG, "Evolution canceled");
+                    Toast.makeText(MainActivity.this, "진화 취소됨", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
     private void setupListeners() {
         // 먹이 주기 버튼 - 모달 표시
         binding.feedButton.setOnClickListener(v -> showFoodModal());
@@ -278,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
             Snackbar.make(binding.getRoot(), "알이 좋아합니다! 행복도 +5", Snackbar.LENGTH_SHORT).show();
         });
 
-        // Long press egg to show evolution dialog
+        // 길게 누르면 진화 팝업 표시
         binding.eggImage.setOnLongClickListener(v -> {
             Log.d(TAG, "Egg long press detected");
             if (evolutionManager.canEvolve()) {
@@ -573,6 +600,12 @@ public class MainActivity extends AppCompatActivity {
         // 진화 타입별 포인트 추가 (TYPE_2, TYPE_3 선택 가능 여부 결정)
         evolutionManager.addEvolutionPoints(choice.getStatType(), choice.getStatValue());
 
+        // 디버그 로그
+        Log.d(TAG, "handleEventChoice - StatType: " + choice.getStatType() + ", Value: " + choice.getStatValue());
+        Log.d(TAG, "Evolution Points - TYPE_1: " + evolutionManager.getState().getType1Points() +
+                   ", TYPE_2: " + evolutionManager.getState().getType2Points() +
+                   ", TYPE_3: " + evolutionManager.getState().getType3Points());
+
         String message = "📝 " + choice.getDescription();
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
@@ -597,41 +630,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 테스트용: 진화 팝업 테스트
-     * 사용: onCreate()에서 testEvolution() 주석 제거
+     * 진화 흐름:
+     * 1. 게임 진행 → 경험치 100 획득 → EvolutionManager.addEvolutionExp() 호출
+     * 2. 경험치 100 도달 시 자동으로 진화 팝업 표시 (또는 onResume에서 재확인)
+     * 3. 진화 완료 → 경험치 초기화 (다음 진화를 위해 다시 100 필요)
+     * 4. 랜덤이벤트에서 포인트 선택 → TYPE_2, TYPE_3 진화 가능 여부 결정
      *
-     * 실제 게임플레이:
-     * - RandomEvent 이벤트 선택 → handleEventChoice() 호출
-     * - handleEventChoice()에서 addEvolutionExp() 호출
-     * - 경험치 100 도달 시 자동으로 진화 팝업 표시
+     * 길게 누르기: 진화 가능 상태면 언제든지 진화 팝업 표시
      */
-    private void testEvolution() {
-        // 테스트 모드: 주석을 해제하여 테스트할 수 있습니다
-
-        // ====== 경험치 설정 (자유롭게 수정 가능) ======
-        // 총 경험치: 레벨 1→2는 100, 레벨 2→3은 200, 최대진화는 300
-        int testExperiencePoints = 100;  // 수정: 50, 100, 150, 200, 250, 300 등으로 변경 가능
-
-        // 레벨을 2로 설정
-        evolutionManager.testSetLevel(2);
-
-        // 저장된 사용자 이름 가져오기
-        SharedPreferences prefs = getSharedPreferences("egg_info", MODE_PRIVATE);
-        String savedName = prefs.getString("egg_name", "알");
-        evolutionManager.getState().setUserProvidedName(savedName);
-        evolutionManager.saveState();
-
-        // 설정한 경험치 추가 → 자동으로 진화 팝업 표시
-        evolutionManager.addEvolutionExp(testExperiencePoints);
-
-        // 포인트 설정 (선택 사항)
-        evolutionManager.addEvolutionPoints("adventurer", 100);   // TYPE_1: 100 (항상 선택 가능)
-        // evolutionManager.addEvolutionPoints("scholar", 200);     // TYPE_2: 200 (주석 해제하면 선택 가능)
-        // evolutionManager.addEvolutionPoints("collector", 200);   // TYPE_3: 200 (주석 해제하면 선택 가능)
-
-        Toast.makeText(this, "테스트 모드: 경험치 " + testExperiencePoints + " 추가됨 → 진화 팝업 표시", Toast.LENGTH_SHORT).show();
-
-    }
 
     @Override
     protected void onDestroy() {

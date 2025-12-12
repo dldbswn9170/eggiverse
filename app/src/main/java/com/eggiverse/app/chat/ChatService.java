@@ -48,7 +48,7 @@ public class ChatService {
     public void sendMessage(String userMessage, ChatCallback callback) {
         try {
             JSONObject jsonBody = new JSONObject();
-            jsonBody.put("model", "gpt-3.5-turbo");
+            jsonBody.put("model", "gpt-3.5-turbo-0125");
             jsonBody.put("max_tokens", 150);
             jsonBody.put("temperature", 0.8);
 
@@ -90,8 +90,12 @@ public class ChatService {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     try (ResponseBody responseBody = response.body()) {
+                        Log.d(TAG, "API 응답 코드: " + response.code());
+
                         if (!response.isSuccessful() || responseBody == null) {
-                            Log.e(TAG, "API 오류: " + response);
+                            String errorBody = responseBody != null ? responseBody.string() : "No response body";
+                            Log.e(TAG, "API 오류: " + response.code());
+                            Log.e(TAG, "오류 응답: " + errorBody);
                             callback.onError("서버 오류 (" + response.code() + ")");
                             return;
                         }

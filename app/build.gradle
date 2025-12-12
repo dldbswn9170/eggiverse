@@ -24,7 +24,14 @@ android {
         if (project.rootProject.file('local.properties').exists()) {
             properties.load(project.rootProject.file('local.properties').newDataInputStream())
         }
-        buildConfigField "String", "OPENAI_API_KEY", "\"${properties.getProperty('OPENAI_API_KEY') ?: ''}\""
+
+        def apiKey = properties.getProperty('OPENAI_API_KEY', '')
+        if (apiKey.isEmpty()) {
+            println("⚠️  WARNING: OPENAI_API_KEY is not set in local.properties!")
+            println("Add this line to local.properties: OPENAI_API_KEY=sk-proj-your_key_here")
+        }
+
+        buildConfigField "String", "OPENAI_API_KEY", "\"${apiKey}\""
     }
 
     buildTypes {

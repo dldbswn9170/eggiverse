@@ -11,6 +11,7 @@ public class EvolutionState {
     private String userProvidedName;           // 사용자가 입력한 실제 캐릭터 이름
 
     private int evolutionExp;                  // 진화 경험치 (100 도달 시 진화 팝업)
+    private int lastShownExpForPopup;          // 마지막으로 팝업을 표시한 경험치 (중복 팝업 방지)
     private int type1Points;                   // 타입 1 누적 포인트 (TYPE_2, TYPE_3 선택 가능 여부)
     private int type2Points;                   // 타입 2 누적 포인트
     private int type3Points;                   // 타입 3 누적 포인트
@@ -21,6 +22,7 @@ public class EvolutionState {
         this.currentCharacterName = "알";
         this.userProvidedName = "알";
         this.evolutionExp = 0;
+        this.lastShownExpForPopup = -1;
         this.type1Points = 0;
         this.type2Points = 0;
         this.type3Points = 0;
@@ -67,6 +69,14 @@ public class EvolutionState {
         this.evolutionExp = evolutionExp;
     }
 
+    public int getLastShownExpForPopup() {
+        return lastShownExpForPopup;
+    }
+
+    public void setLastShownExpForPopup(int lastShownExpForPopup) {
+        this.lastShownExpForPopup = lastShownExpForPopup;
+    }
+
     public int getType1Points() {
         return type1Points;
     }
@@ -100,9 +110,11 @@ public class EvolutionState {
 
     /**
      * 진화 경험치 초기화 (진화 후)
+     * 팝업 추적값도 초기화하여 다음 100 도달 시 새로운 팝업 표시
      */
     public void resetEvolutionExp() {
         this.evolutionExp = 0;
+        this.lastShownExpForPopup = -1;
     }
 
     /**

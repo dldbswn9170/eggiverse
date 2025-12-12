@@ -68,6 +68,15 @@ public class EvolutionDialogManager {
     private void setupChoiceDialog(Dialog dialog, View dialogView) {
         EvolutionType[] types = evolutionManager.getAvailableEvolutionTypes();
 
+        int currentLevel = evolutionManager.getState().getCurrentLevel();
+        int type1Pts = evolutionManager.getState().getType1Points();
+        int type2Pts = evolutionManager.getState().getType2Points();
+        int type3Pts = evolutionManager.getState().getType3Points();
+
+        Log.d(TAG, "setupChoiceDialog() - Current Level: " + currentLevel);
+        Log.d(TAG, "setupChoiceDialog() - Raw Points from State - TYPE_1: " + type1Pts +
+                   ", TYPE_2: " + type2Pts + ", TYPE_3: " + type3Pts);
+
         // 3가지 진화 타입 설정
         setupEvolutionTypeButton(dialogView, R.id.evolution_type_1, types[0], dialog);
         setupEvolutionTypeButton(dialogView, R.id.evolution_type_2, types[1], dialog);
@@ -118,8 +127,26 @@ public class EvolutionDialogManager {
         // 진화 가능 여부 판단
         EvolutionManager.EvolutionInfo info = evolutionManager.getEvolutionInfo(type);
 
+        // 모든 타입의 포인트 정보 표시 (TYPE_1 포함)
+        if (lockText != null) {
+            String pointText = String.format("%d/%d", info.currentPoints, info.requiredPoints);
+            lockText.setText(pointText);
+            lockText.setVisibility(View.VISIBLE);
+            Log.d(TAG, "setupEvolutionTypeButton - Type: " + type);
+            Log.d(TAG, "  - CurrentLevel: " + evolutionManager.getState().getCurrentLevel());
+            Log.d(TAG, "  - CurrentPoints (from info): " + info.currentPoints);
+            Log.d(TAG, "  - RequiredPoints: " + info.requiredPoints);
+            Log.d(TAG, "  - CanEvolve: " + info.canEvolve);
+            Log.d(TAG, "  - Display Text: " + pointText);
+        } else {
+            Log.d(TAG, "setupEvolutionTypeButton - lockText is null for type: " + type);
+        }
+
         if (info.canEvolve) {
             // 진화 가능 상태
+            if (overlay != null) {
+                overlay.setVisibility(View.GONE);
+            }
             typeFrame.setOnClickListener(v -> {
                 dialog.dismiss();
                 showEvolutionAnimation(type);
@@ -128,20 +155,18 @@ public class EvolutionDialogManager {
             // 비활성화 상태: 기본 진화(TYPE_1)만 클릭 가능
             if (type == EvolutionType.TYPE_1) {
                 // TYPE_1이 부족하면 기본 진화로 강제 진행 (포인트 체크 없음)
+                if (overlay != null) {
+                    overlay.setVisibility(View.GONE);
+                }
                 typeFrame.setOnClickListener(v -> {
                     dialog.dismiss();
                     // 기본 진화: TYPE_1로 강제 진화 (포인트 부족 무시)
                     showEvolutionAnimation(EvolutionType.TYPE_1);
                 });
-                // TYPE_1은 잠금 표시 안 함 (항상 선택 가능)
             } else {
                 // TYPE_2, TYPE_3는 잠금
                 if (overlay != null) {
                     overlay.setVisibility(View.VISIBLE);
-                }
-                if (lockText != null) {
-                    lockText.setVisibility(View.VISIBLE);
-                    lockText.setText(String.format("%d/%d", info.currentPoints, info.requiredPoints));
                 }
             }
         }
@@ -222,6 +247,18 @@ public class EvolutionDialogManager {
         }
 
         Log.d(TAG, "Evolution succeeded - showing result screen");
+
+        // 진화 완료 후 경험치 초기화 (다음 진화를 위한 준비)
+        evolutionManager.getState().resetEvolutionExp();
+
+        // 진화 완료 후 포인트 초기화 (다음 진화를 위해 포인트 리셋)
+        evolutionManager.getState().setType1Points(0);
+        evolutionManager.getState().setType2Points(0);
+        evolutionManager.getState().setType3Points(0);
+
+        evolutionManager.saveState();
+
+        Log.d(TAG, "Evolution - Points reset. New Points - TYPE_1: 0, TYPE_2: 0, TYPE_3: 0");
 
         // 진화된 이미지 설정 (level 3이 되므로 level3 이미지 사용)
         int nextLevel = evolutionManager.getState().getCurrentLevel();

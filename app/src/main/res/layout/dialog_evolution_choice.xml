@@ -54,17 +54,19 @@
                     android:background="#80000000"
                     android:visibility="gone" />
 
-                <!-- 잠금 텍스트 -->
+                <!-- 포인트 텍스트 -->
                 <TextView
                     android:id="@+id/lock_text_type_1"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="포인트 부족"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:text="100/100"
                     android:textColor="@android:color/white"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     android:textStyle="bold"
-                    android:visibility="gone" />
+                    android:paddingBottom="8dp"
+                    android:visibility="visible" />
             </FrameLayout>
 
             <!-- 타입 2 -->
@@ -92,13 +94,15 @@
                 <TextView
                     android:id="@+id/lock_text_type_2"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="포인트 부족"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:text="0/100"
                     android:textColor="@android:color/white"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     android:textStyle="bold"
-                    android:visibility="gone" />
+                    android:paddingBottom="8dp"
+                    android:visibility="visible" />
             </FrameLayout>
 
             <!-- 타입 3 -->
@@ -126,13 +130,15 @@
                 <TextView
                     android:id="@+id/lock_text_type_3"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="포인트 부족"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:text="0/100"
                     android:textColor="@android:color/white"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     android:textStyle="bold"
-                    android:visibility="gone" />
+                    android:paddingBottom="8dp"
+                    android:visibility="visible" />
             </FrameLayout>
         </LinearLayout>
 

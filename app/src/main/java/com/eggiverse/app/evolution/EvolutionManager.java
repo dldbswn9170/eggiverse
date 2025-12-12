@@ -23,8 +23,8 @@ public class EvolutionManager {
     private static final String TAG = "EvolutionManager";
 
     // 진화 조건 설정
-    private static final int BASE_POINTS_FOR_EVOLUTION = 100;    // 동일 타입 유지에 필요한 포인트
-    private static final int PENALTY_MULTIPLIER = 2;              // 다른 타입 변경 시 2배
+    private static final int LEVEL1_TO_2_REQUIRED_POINTS = 100;   // Level 1→2 진화 필요 포인트
+    private static final int LEVEL2_TO_3_REQUIRED_POINTS = 200;   // Level 2→3 진화 필요 포인트
 
     /**
      * 진화 준비 완료 콜백 인터페이스
@@ -59,9 +59,16 @@ public class EvolutionManager {
         String json = prefs.getString(KEY_STATE, null);
         if (json != null) {
             this.state = gson.fromJson(json, EvolutionState.class);
+            Log.d(TAG, "loadState() - ✓ Loaded from SharedPreferences");
+            Log.d(TAG, "  - Level: " + state.getCurrentLevel());
+            Log.d(TAG, "  - EXP: " + state.getEvolutionExp());
+            Log.d(TAG, "  - LastShownExp: " + state.getLastShownExpForPopup());
+            Log.d(TAG, "  - Points - TYPE_1: " + state.getType1Points() +
+                       ", TYPE_2: " + state.getType2Points() + ", TYPE_3: " + state.getType3Points());
         } else {
             this.state = new EvolutionState();
             saveState();
+            Log.d(TAG, "loadState() - ✗ No saved state, created new EvolutionState");
         }
     }
 
@@ -71,6 +78,12 @@ public class EvolutionManager {
     public void saveState() {
         String json = gson.toJson(state);
         prefs.edit().putString(KEY_STATE, json).apply();
+        Log.d(TAG, "saveState() - ✓ Saved to SharedPreferences");
+        Log.d(TAG, "  - Level: " + state.getCurrentLevel());
+        Log.d(TAG, "  - EXP: " + state.getEvolutionExp());
+        Log.d(TAG, "  - LastShownExp: " + state.getLastShownExpForPopup());
+        Log.d(TAG, "  - Points - TYPE_1: " + state.getType1Points() +
+                   ", TYPE_2: " + state.getType2Points() + ", TYPE_3: " + state.getType3Points());
     }
 
     /**
@@ -111,10 +124,19 @@ public class EvolutionManager {
      */
     public void addEvolutionPoints(String statType, int value) {
         EvolutionType type = mapStatTypeToEvolutionType(statType);
+
+        Log.d(TAG, "addEvolutionPoints() BEFORE - statType: " + statType + ", mapped type: " + type + ", Points to add: " + value);
+        Log.d(TAG, "addEvolutionPoints() BEFORE - Current Points - TYPE_1: " + state.getType1Points() +
+                   ", TYPE_2: " + state.getType2Points() + ", TYPE_3: " + state.getType3Points());
+
         state.addPoints(type, value);
+
+        Log.d(TAG, "addEvolutionPoints() AFTER - Current Points - TYPE_1: " + state.getType1Points() +
+                   ", TYPE_2: " + state.getType2Points() + ", TYPE_3: " + state.getType3Points());
+
         saveState();
 
-        Log.d(TAG, "addEvolutionPoints() - Type: " + type + ", Points: " + value);
+        Log.d(TAG, "addEvolutionPoints() - Saved to SharedPreferences");
     }
 
     /**
@@ -134,12 +156,16 @@ public class EvolutionManager {
     public boolean canEvolveToType(EvolutionType targetType) {
         int requiredPoints;
 
-        if (targetType == state.getCurrentType()) {
-            // 동일 타입 유지: BASE_POINTS_FOR_EVOLUTION 필요
-            requiredPoints = BASE_POINTS_FOR_EVOLUTION;
+        // 현재 레벨에 따라 필요 포인트 결정
+        if (state.getCurrentLevel() == 1) {
+            // Level 1→2: 100 포인트
+            requiredPoints = LEVEL1_TO_2_REQUIRED_POINTS;
+        } else if (state.getCurrentLevel() == 2) {
+            // Level 2→3: 200 포인트
+            requiredPoints = LEVEL2_TO_3_REQUIRED_POINTS;
         } else {
-            // 다른 타입으로 변경: 2배 필요
-            requiredPoints = BASE_POINTS_FOR_EVOLUTION * PENALTY_MULTIPLIER;
+            // Level 3 이상: 진화 불가
+            requiredPoints = Integer.MAX_VALUE;
         }
 
         return state.getPoints(targetType) >= requiredPoints;
@@ -216,12 +242,29 @@ public class EvolutionManager {
      * 진화 가능 여부와 필요 포인트 정보
      */
     public EvolutionInfo getEvolutionInfo(EvolutionType targetType) {
-        int requiredPoints = (targetType == state.getCurrentType())
-                ? BASE_POINTS_FOR_EVOLUTION
-                : BASE_POINTS_FOR_EVOLUTION * PENALTY_MULTIPLIER;
+        int requiredPoints;
+        int currentLevel = state.getCurrentLevel();
+
+        // 현재 레벨에 따라 필요 포인트 결정
+        if (currentLevel == 1) {
+            // Level 1→2: 100 포인트
+            requiredPoints = LEVEL1_TO_2_REQUIRED_POINTS;
+        } else if (currentLevel == 2) {
+            // Level 2→3: 200 포인트
+            requiredPoints = LEVEL2_TO_3_REQUIRED_POINTS;
+        } else {
+            // Level 3 이상: 진화 불가
+            requiredPoints = Integer.MAX_VALUE;
+        }
 
         int currentPoints = state.getPoints(targetType);
         boolean canEvolve = currentPoints >= requiredPoints;
+
+        Log.d(TAG, "getEvolutionInfo() called for type: " + targetType);
+        Log.d(TAG, "  - CurrentLevel: " + currentLevel);
+        Log.d(TAG, "  - RequiredPoints for this level: " + requiredPoints);
+        Log.d(TAG, "  - CurrentPoints retrieved from state: " + currentPoints);
+        Log.d(TAG, "  - CanEvolve: " + canEvolve);
 
         return new EvolutionInfo(targetType, currentPoints, requiredPoints, canEvolve);
     }

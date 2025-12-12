@@ -2,6 +2,7 @@ package com.eggiverse.app.event;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Set;
 
 public class RandomEventManager {
 
+    private static final String TAG = "RandomEventManager";
     private static RandomEventManager instance;
     private final SharedPreferences prefs;
     private final Random random;
@@ -75,12 +77,16 @@ public class RandomEventManager {
         feedCount++;
         prefs.edit().putInt(KEY_FEED_COUNT, feedCount).apply();
 
+        Log.d(TAG, "shouldTriggerEventOnFeed() - feedCount: " + feedCount);
+
         // 3번째 먹이에 확정 발동
         if (feedCount == 3) {
             prefs.edit().putInt(KEY_FEED_COUNT, 0).apply(); // 카운터 리셋
+            Log.d(TAG, "shouldTriggerEventOnFeed() - 3번째 먹이! 이벤트 발동!");
             return true;
         }
 
+        Log.d(TAG, "shouldTriggerEventOnFeed() - 아직 이벤트 미발동, feedCount=" + feedCount);
         return shouldTriggerEvent(); // 기본 확률 체크
     }
 
@@ -118,6 +124,7 @@ public class RandomEventManager {
 
         // 모든 이벤트를 다 봤으면 리셋
         if (availableEvents.isEmpty()) {
+            Log.d(TAG, "getRandomEvent() - 모든 이벤트를 다 봤으므로 리셋");
             shownToday.clear();
             saveShownEventsToday(shownToday);
             availableEvents.addAll(allEvents);
@@ -125,17 +132,22 @@ public class RandomEventManager {
 
         // 랜덤하게 하나 선택
         if (availableEvents.isEmpty()) {
+            Log.d(TAG, "getRandomEvent() - 사용 가능한 이벤트 없음!");
             return null;
         }
 
         int randomIndex = random.nextInt(availableEvents.size());
-        return availableEvents.get(randomIndex);
+        RandomEvent selectedEvent = availableEvents.get(randomIndex);
+        Log.d(TAG, "getRandomEvent() - 선택된 이벤트: " + selectedEvent.getId() + " (" + selectedEvent.getTitle() + ")");
+        return selectedEvent;
     }
 
     /**
      * 이벤트 발생 기록
      */
     public void recordEventShown(String eventId) {
+        Log.d(TAG, "recordEventShown() - eventId: " + eventId);
+
         // 마지막 이벤트 시간 업데이트
         prefs.edit()
                 .putLong(KEY_LAST_EVENT_TIME, System.currentTimeMillis())
@@ -151,6 +163,8 @@ public class RandomEventManager {
         Set<String> shownToday = getShownEventsToday();
         shownToday.add(eventId);
         saveShownEventsToday(shownToday);
+
+        Log.d(TAG, "recordEventShown() - ✓ 이벤트 기록됨");
     }
 
     /**

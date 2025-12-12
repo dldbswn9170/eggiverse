@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.eggiverse.app.data.db.AppDatabase;
 import com.eggiverse.app.data.db.dao.GameStateDao;
 import com.eggiverse.app.data.db.entity.GameState;
+import com.eggiverse.app.evolution.EvolutionManager;
 
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -148,6 +149,12 @@ public class GameRepository {
             }
 
             updateGameState(currentState);
+
+            // 진화 시스템에 경험치 추가 (진화 팝업 트리거)
+            EvolutionManager evolutionManager = EvolutionManager.getInstance();
+            if (evolutionManager != null) {
+                evolutionManager.addEvolutionExp(rewardExp);
+            }
         }
     }
 
